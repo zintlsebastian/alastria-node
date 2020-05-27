@@ -1,3 +1,41 @@
+# WIP *do not use until rc1 (mid of june 2020) #
+# WIP no usar hasta medidos de junio 2020 #
+
+## Notas generales
+* Desarrollamos este readme en español, para su traducción una vez finalizada la rc1. Sin embargo, mantengamos comentarios en código y commits en inglés, para su mejor mantenimiento
+
+# Instalación y Gestión de NODOS en Alastria-T
+
+
+
+## Repositorios y enlaces relacionados ##
+
+
+
+* [alastria-node](https://github.com/alastria/alastria-node): Este repositorio. Usado para mantener arquitectura Docker y Ansible, así como los scripts de mantenimineto de nodo.
+* [alastria-access-point](https://github.com/alastria/alastria-access-point): Uso Use of nginx as front proxy for geth, constellarion
+* [alastria-quorum](https://github.com/alastria/quorum): Fork de repositorio Quorum
+* [golang](http://)
+* [constellation](http://)
+* [alastria-monitor](https://github.com/alastria/monitor): Old REST API to interact with geth node
+
+## Docker installation
+
+## Agredecimientos
+
+* Alfonso de la Rocha
+* Marcos Serradilla Diez
+* Guillermo Araujo Riestra
+
+A los socios de Alastria
+
+```
+EOF
+```
+*** 
+# LEGACY
+
+
 # ALASTRIA Red T #
 [![Slack Status](https://img.shields.io/badge/slack-join_chat-white.svg?logo=slack&style=social)](https://alastria.slack.com/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/alastria/alastria-node/blob/testnet2/LICENSE)
