@@ -1,42 +1,45 @@
 #!/bin/bash
+
+# alejandro.alfonso
+# WIP
+# quitado el dockerfile
+# documentado validator y bootnode, pero no hay entradas para ellos
+# sugerir usar ifconfig.co como proveedor de IP WAN
+
 set -e
 
-MESSAGE='Usage: init <mode> <node-type> <node-name>
+MESSAGE='Usage: init <mode> <node-type> <node-name> <password>
     mode: CURRENT_HOST_IP | auto | backup
     node-type: validator | general | bootnode
     node-name: NODE_NAME (example: Alastria)'
 
+# alejandro.alfonso
+# hay un cuarto argumento, PWD
 if ( [ $# -ne 3 ] ); then
     echo "$MESSAGE"
     exit
 fi
 
-VALIDATOR0_HOST_IP="$(dig +short validator0.telsius.alastria.io @resolver1.opendns.com > /dev/null 2>&1 || curl -s --retry 2 icanhazip.com)"
 CURRENT_HOST_IP="$1"
 NODE_TYPE="$2"
 NODE_NAME="$3"
-ACCOUNT_PASSWORD='Passw0rd'
-
+if ( [ -z "${4}" ] ); then
+	ACCOUNT_PASSWORD='Passw0rd'
+else
+	ACCOUNT_PASSWORD="$4"
+fi
+PWD="$(pwd)"
+CONSTELLATION_NODES=$(cat ../data/constellation-nodes.json)
 
 if ( [ "auto" == "$1" -o "backup" == "$1" ]); then
-    echo "Autodiscovering public host IP ..."
+    echo "[*] Autodiscovering public host IP ..."
     CURRENT_HOST_IP="$(dig +short myip.opendns.com @resolver1.opendns.com > /dev/null 2>&1 || curl -s --retry 2 icanhazip.com)"
     echo "Public host IP found: $CURRENT_HOST_IP"
 fi
 
-if ( [ "dockerfile" == "$1" ]); then
-    echo "Getting IP from environmental variable ..."
-    CURRENT_HOST_IP=$HOST_IP
-    echo "Public host IP found: $CURRENT_HOST_IP"
-fi
-
-PWD="$(pwd)"
-CONSTELLATION_NODES=$(cat ../data/constellation-nodes.json)
-
 update_constellation_nodes() {
     NODE_IP="$1"
     CONSTELLATION_PORT="$2"
-
     URL=",
     \"https://$NODE_IP:$CONSTELLATION_PORT/\"
 ]"
@@ -46,7 +49,7 @@ update_constellation_nodes() {
 }
 
 update_nodes_list() {
-    echo "Selected $NODE_TYPE node..."
+    echo "[*] Selected $NODE_TYPE node..."
     echo "Updating permissioned nodes..."
 
     BOOT_NODES=$(cat ~/alastria-node/data/boot-nodes.json)
@@ -59,20 +62,16 @@ update_nodes_list() {
    if ( [ "validator" == "$NODE_TYPE" ]); then
         VALIDATOR_NODES="$VALIDATOR_NODES$ENODE"
         echo "$VALIDATOR_NODES" > ~/alastria-node/data/validator-nodes.json
-    else
-      if ( [ "general" == "$NODE_TYPE" ]); then
-          REGULAR_NODES="$REGULAR_NODES$ENODE"
-          echo "$REGULAR_NODES" > ~/alastria-node/data/regular-nodes.json
-        else
-          if ( [ "bootnode" == "$NODE_TYPE" ]); then
-              BOOT_NODES="$BOOT_NODES$ENODE"
-              echo "$BOOT_NODES" > ~/alastria-node/data/boot-nodes.json
-         fi 
-       fi
-    fi
-
+   fi
+   if ( [ "general" == "$NODE_TYPE" ]); then
+        REGULAR_NODES="$REGULAR_NODES$ENODE"
+        echo "$REGULAR_NODES" > ~/alastria-node/data/regular-nodes.json
+   fi
+   if ( [ "bootnode" == "$NODE_TYPE" ]); then
+        BOOT_NODES="$BOOT_NODES$ENODE"
+        echo "$BOOT_NODES" > ~/alastria-node/data/boot-nodes.json
+   fi 
 }
-
 
 generate_conf() {
    #define parameters which are passed in.
@@ -121,30 +120,22 @@ verbosity = 2
 EOF
 }
 
-install_monitor() {
-    if [[ ! -z "$GOPATH"/src/github.com/alastria/monitor  ]]; then
-        echo "Installing monitor"
-        ~/alastria-node/scripts/monitor.sh build
-    fi
-}
 
 echo "[*] Cleaning up temporary data directories."
+# alejandro.alfonso
+# borrar toda la DLT?
 rm -rf ~/alastria/data
 rm -rf ~/alastria/logs/quorum*
 mkdir -p ~/alastria/data/{geth,constellation}
 mkdir -p ~/alastria/data/constellation/{data,keystore}
 mkdir -p ~/alastria/logs
 
-install_monitor
-
-echo "$NODE_NAME" > ~/alastria/data/IDENTITY
-echo "$NODE_TYPE" > ~/alastria/data/NODE_TYPE
-
-# Creamos el fichero de passwords con la contraseña de las cuentas
-echo "Passw0rd" > ~/alastria/data/passwords.txt
+echo $ACCOUNT_PASSWORD > ~/alastria/data/passwords.txt
 
 echo "[*] Initializing quorum"
 geth --datadir ~/alastria/data init ~/alastria-node/data/genesis.json
+
+echo "[*] Initializing bootnode"
 cd ~/alastria/data/geth
 bootnode -genkey nodekey
 ENODE_KEY=$(bootnode -nodekey nodekey -writeaddress)
@@ -155,91 +146,46 @@ if [ ! -f ~/alastria-node/data/keys/data/geth/nodekey ]; then
 fi
 
 
-if ( [ "backup" == "$1" ]); then
-    ENODE_KEY=$(bootnode -nodekey ~/alastria-keysBackup/data/geth/nodekey -writeaddress)
-fi
-
-if ( [ "dockerfile" == "$1" ]); then
-    ENODE_KEY=$(bootnode -nodekey ~/alastria-node/data/keys/data/geth/nodekey -writeaddress)
-fi
-
 echo "ENODE -> 'enode://${ENODE_KEY}@${CURRENT_HOST_IP}:21000?discport=0'"
-if ( [ "backup" != "$1" ]); then
-    update_nodes_list "enode://${ENODE_KEY}@${CURRENT_HOST_IP}:21000?discport=0"
-fi
+
+# que hace esto?
 cd ~
-# IP for the inicital validator on network
 ~/alastria-node/scripts/updatePerm.sh "$NODE_TYPE"
 
-if [[ "$CURRENT_HOST_IP" == "$VALIDATOR0_HOST_IP" ]]; then
-    echo "e7889a64e5ec8c28830a1c8fc620810f086342cd511d708ee2c4420231904d18" > ~/alastria/data/nodekey
-fi
-
-
 if ( [ "general" == "$NODE_TYPE" ]); then
-    # echo "     Por favor, introduzca como contraseña 'Passw0rd'."
-    echo  "     Definida contraseña por defecto para cuenta principal como: $ACCOUNT_PASSWORD."
+
+    echo "[*] Inicialite geth..."
+
     echo $ACCOUNT_PASSWORD > ./account_pass
+
     # Only create keystore folder on general node.
     mkdir -p ~/alastria/data/keystore
     geth --datadir ~/alastria/data --password ./account_pass account new
     rm ./account_pass
 
     echo "[*] Initializing Constellation node."
-
-    if ( [ "backup" != "$1" ]); then
-        update_constellation_nodes "${CURRENT_HOST_IP}" "9000"
-        #generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
-    fi
-
     generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
+
     cd ~/alastria/data/constellation/keystore
     cat ~/alastria/data/passwords.txt | constellation-node --generatekeys=node
     if [ ! -f ~/alastria-node/data/keys/data/constellation/keystore ]; then
+
         echo "[*] creating dir if not created, and set keystore"
         mkdir -p ~/alastria-node/data/keys/data/constellation
         cp -rf . ~/alastria-node/data/keys/data/constellation/keystore
         cp -rf  ~/alastria/data/keystore ~/alastria-node/data/keys/data/
     fi
 
-    echo "______"
     cd ~
-fi
-
-if ( [ "backup" == "$1" ]); then
-    echo "Recovering keys from backup ..."
-    rm -rf ~/alastria/data/constellation/keystore
-    rm -rf ~/alastria/data/keystore
-    rm ~/alastria/data/geth/nodekey
-
-    echo "Recovering constellation keys ..."
-    cp -rf ~/alastria-keysBackup/data/constellation/keystore ~/alastria/data/constellation/
-    echo "Recovering node keys ..."
-    cp -rf ~/alastria-keysBackup/data/keystore ~/alastria/data/
-    echo "Recovering enode ID ..."
-    cp ~/alastria-keysBackup/data/geth/nodekey ~/alastria/data/geth/nodekey
-    echo "Cleaning backup files ..."
-    rm -rf ~/alastria-keysBackup
-fi
-
-if ( [ "dockerfile" == "$1" ]); then
-    echo "Recovering keys saved in the repository ..."
-    rm -rf ~/alastria/data/constellation/keystore
-    rm -rf ~/alastria/data/keystore
-    rm ~/alastria/data/geth/nodekey
-
-    echo "Recovering constellation keys ..."
-    cp -rf ~/alastria-node/data/keys/data/constellation/keystore ~/alastria/data/constellation/
-    echo "Recovering node keys ..."
-    cp -rf ~/alastria-node/data/keys/data/keystore ~/alastria/data/
-    echo "Recovering enode ID ..."
-    cp ~/alastria-node/data/keys/data/geth/nodekey ~/alastria/data/geth/nodekey
-
 fi
 
 if ( [ "validator" == "$NODE_TYPE" ]); then
     rm -rf ~/alastria/data/keystore
 fi
+
+echo "[*] Finish initiation."
+echo "$NODE_NAME" > ~/alastria/data/IDENTITY
+echo "$NODE_TYPE" > ~/alastria/data/NODE_TYPE
 
 echo "[*] Initialization was completed successfully."
 echo " "
