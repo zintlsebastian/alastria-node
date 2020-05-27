@@ -1,8 +1,15 @@
 #!/bin/bash
 
+IMAGE_NAME=digitelts/alastria-node-t:latest
+
+DIRECTORY="./config"
+
+# alejandro.alfonso
+# FIJADO POR AHORA NODO REGULAR. A EVOLUCIONAR!
+# documentar posiblidad de EXTRA_ARGUMENTS para docker
+# necesaria password para account.eth[0}
 NODE_TYPE="general"
 NODE_NAME="REG_"
-IMAGE_NAME=digitelts/alastria-node-t:latest
 
 function setCompanyName {
   echo "Write company name: "
@@ -46,13 +53,15 @@ function setSequential {
 }
 
 function setConstellation {
+
+  PS3="Do you want to enable the constellation? => "
+
   if [[ ! -z ${ENABLE_CONSTELLATION} ]]; then
     echo "ENABLE_CONSTELLATION envvar set to: $ENABLE_CONSTELLATION"
     ENABLE_CONSTELLATION=${ENABLE_CONSTELLATION}
     return
   fi
 
-  PS3="Do you want to enable the constellation?"$'\n'"Press 1 (Yes) or 2 (No) => "
   options=("Yes" "No")
 
   select opt in "${options[@]}"
@@ -60,35 +69,12 @@ function setConstellation {
     case $opt in
       "Yes")
         ENABLE_CONSTELLATION=true
+  	echo ""
         break
         ;;
       "No")
-        ENABLE_CONSTELLATION=
-        break
-        ;;
-    esac
-  done
-}
-
-function setMonitor {
-  if [[ ! -z ${MONITOR_ENABLED} ]]; then
-    echo "MONITOR_ENABLED envvar set to: $MONITOR_ENABLED"
-    MONITOR_ENABLED=${MONITOR_ENABLED}
-    return
-  fi
-
-  PS3="Do you want to install the monitor?"$'\n'"Press 1 (Yes) or 2 (No) => "
-  options=("Yes" "No")
-
-  select opt in "${options[@]}"
-  do
-    case $opt in
-      "Yes")
-        MONITOR_ENABLED=1
-        break
-        ;;
-      "No")
-        MONITOR_ENABLED=0
+        ENABLE_CONSTELLATION=false
+  	echo ""
         break
         ;;
     esac
@@ -96,48 +82,43 @@ function setMonitor {
 }
 
 function setVolume {
-  echo "Set the absolute path of the data directory in Dockerhost (note, the Image will be at least 40Gb long): "
-  read DATA_DIR
+  echo "Set the absolute path of the permanent data directory in Docker Host => "
+  if [[ -z ${DATA_DIR} ]]; then
+    read DATA_DIR
+  else
+    echo "DATA_DIR envvar set to: $DATA_DIR"
+    DATA_DIR=${DATA_DIR}
+  fi
   echo ""
-  DATA_DIR=${DATA_DIR}
 }
 
 function launchConfig {
-  DIRECTORY=./config
+
   if [ ! -d "$DIRECTORY" ]; then
     mkdir $DIRECTORY
   fi
 
-  ACCESS_POINT_DIR="$(pwd)"/alastria-access-point/nginx/conf.d
-
   echo $NODE_NAME > $DIRECTORY/NODE_NAME
   echo $NODE_TYPE > $DIRECTORY/NODE_TYPE
-  echo $MONITOR_ENABLED > $DIRECTORY/MONITOR_ENABLED
   echo $DATA_DIR > $DIRECTORY/DATA_DIR
-  echo $ACCESS_POINT_DIR > $DIRECTORY/ACCESS_POINT_DIR
   echo $ENABLE_CONSTELLATION > $DIRECTORY/ENABLE_CONSTELLATION
   EXTRA_DOCKER_ARGUMENTS=${EXTRA_DOCKER_ARGUMENTS:-}
 
 }
 
 function checkName {
-  #if [[ ! -z NO_LAUNCH_CONFIRM ]]; then
-  #  echo "NO_LAUNCH_CONFIRM enabled, skipping confirmation..."
-  #  echo "LAUNCHING with Node Type => $NODE_TYPE and Node Name => $NODE_NAME"
-  #  launchNode
-  #  return
-  #fi
 
-  PS3="Are you sure that these data are correct?"$'\n'"Node Type => $NODE_TYPE"$'\n'"Node Name => $NODE_NAME"$'\n'"Press 1 (Yes) or 2 (No) => "
+  PS3="Are you sure that these data are correct?"$'\n'"Node Type => $NODE_TYPE"$'\n'"Node Name => $NODE_NAME"$'\n'"Volumen Name => $DATA_DIR"$'\n'"Constellation Enabled => $DATA_DIR"$'\n'"Press 1 (Yes) or 2 (No) => "
+
   options=("Yes" "No")
 
   select opt in "${options[@]}"
   do
     case $opt in
       "Yes")
-        echo "Making config"
+        echo -n "Making config..."
         launchConfig
-        echo "done"
+        echo "...done"
 	exit 0
         ;;
       "No")
@@ -152,7 +133,6 @@ setCompanyName
 setCPUNumber
 setRAMNumber
 setSequential
-setMonitor
 setConstellation
 setVolume
 

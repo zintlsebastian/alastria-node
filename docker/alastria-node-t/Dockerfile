@@ -16,27 +16,25 @@ FROM ubuntu:16.04
 
 LABEL maintainer "Alejandro Alfonso (DigitelTS) (alejandro.alfonso@madisonmk.com)"
 
-# no arguments for Dockerhub version
-ARG DOCKER_VERSION=latest
+# alejandro.alfonso
+# revisar libsodium
+RUN apt-get update \
+	&& apt-get install -y git curl dnsutils net-tools nginx nginx-extras vim nano \
+	&& apt-get install -y software-properties-common make gcc libsodium-dev build-essential libdb-dev zlib1g-dev libtinfo-dev sysvbanner psmisc libleveldb-dev libdb5.3-dev libdb5.3-dev
 
-RUN apt-get -y upgrade &&\
-      apt-get install -y git curl dnsutils net-tools nginx nginx-extras vim nano
+# alejandro.alfonso
+# TBD... descarga local o remota?
+#COPY ./installation-bin/go1.9.5.linux-amd64.tar.gz /tmp
+ADD https://dl.google.com/go/go1.9.5.linux-amd64.tar.gz /tmp
+#COPY ./installation-bin/constellation-0.3.2-ubuntu1604.tar.xz /tmp
+ADD https://github.com/jpmorganchase/constellation/releases/download/v0.3.2/constellation-0.3.2-ubuntu1604.tar.xz /tmp
 
-# TODO: move these scripts, and move to entrypoint.sh
-COPY ./alastria-access-point/nginx/conf.d/access-point.conf /etc/nginx/conf.d/access-point.conf
-COPY ./alastria-access-point/nginx/conf.d/blacklist /etc/nginx/conf.d/blacklist
-COPY ./alastria-access-point/nginx/conf.d/whitelist /etc/nginx/conf.d/whitelist
-COPY ./alastria-node /root/alastria-node
-
-# TODO: remove monitor.sh script
-RUN /root/alastria-node/scripts/bootstrap.sh
-RUN /root/alastria-node/scripts/monitor.sh build
-# dejamos la parametrizacion para primer init
-# RUN /root/alastria-node/scripts/init.sh auto $NODE_TYPE $NODE_NAME
+COPY ./installation-scripts/bootstrap.sh /root/alastria-build/bootstrap.sh
+RUN /root/alastria-build/bootstrap.sh
 
 VOLUME /root/alastria-node
 EXPOSE 80 443 8443 9000 21000 21000/udp 22000 8443
 
-COPY entrypoint.sh /usr/bin/
-WORKDIR /root/alastria-node/scripts
-ENTRYPOINT ["entrypoint.sh"]
+COPY ./installation-scripts/entrypoint.sh /root/alastria-build/entrypoint.sh
+WORKDIR /root/alastria-build
+ENTRYPOINT ["./entrypoint.sh"]
