@@ -23,6 +23,8 @@
 
 ## Agredecimientos
 
+Basado en el trabajo previo de:
+
 * Alfonso de la Rocha
 * Marcos Serradilla Diez
 * Guillermo Araujo Riestra
