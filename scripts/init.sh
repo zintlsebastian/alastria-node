@@ -28,14 +28,14 @@ if ( [ -z "${4}" ] ); then
 else
 	ACCOUNT_PASSWORD="$4"
 fi
-PWD="$(pwd)"
-CONSTELLATION_NODES=$(cat ../data/constellation-nodes.json)
 
-if ( [ "auto" == "$1" -o "backup" == "$1" ]); then
+if ( [ "auto" == "$1" ]); then
     echo "[*] Autodiscovering public host IP ..."
     CURRENT_HOST_IP="$(curl -s --retry 2 icanhazip.com)"
     echo "Public host IP found: $CURRENT_HOST_IP"
+else 
 fi
+
 
 update_constellation_nodes() {
     NODE_IP="$1"
@@ -154,6 +154,9 @@ if ( [ "general" == "$NODE_TYPE" ]); then
     geth --datadir ~/alastria/data --password ~/alastria/data/passwords.txt account new
 
       if ( [ "${ENABLE_CONSTELLATION}" ] == "true" ); then
+
+        PWD="$(pwd)"
+        CONSTELLATION_NODES=$(cat ~/alastria/data/constellation-nodes.json)
 
         echo "[*] Initializing Constellation node."
         mkdir -p ~/alastria/data/keystore
