@@ -21,6 +21,7 @@ function setCompanyName {
   fi
   echo ""
 }
+
 function setCPUNumber {
   echo "Number of CPUs: "
   if [[ -z ${CPU} ]]; then
@@ -31,6 +32,7 @@ function setCPUNumber {
   fi
   echo ""
 }
+
 function setRAMNumber {
   echo "Number of RAM: "
   if [[ -z ${RAM} ]]; then
@@ -41,6 +43,7 @@ function setRAMNumber {
   fi
   echo ""
 }
+
 function setSequential {
   echo "Sequential starting at 00: "
   if [[ -z ${SEQ} ]]; then

@@ -19,8 +19,8 @@ LABEL maintainer "Alejandro Alfonso (DigitelTS) (alejandro.alfonso@madisonmk.com
 # alejandro.alfonso
 # revisar libsodium
 RUN apt-get update \
-	&& apt-get install -y git curl dnsutils net-tools nginx nginx-extras vim nano \
-	&& apt-get install -y software-properties-common make gcc libsodium-dev build-essential libdb-dev zlib1g-dev libtinfo-dev sysvbanner psmisc libleveldb-dev libdb5.3-dev libdb5.3-dev
+	&& apt-get install -y git curl dnsutils net-tools nginx nginx-extras psmisc vim nano \
+	&& apt-get install -y software-properties-common make gcc libsodium-dev build-essential libdb-dev zlib1g-dev libtinfo-dev sysvbanner libleveldb-dev libdb5.3-dev
 
 # alejandro.alfonso
 # TBD... descarga local o remota?
