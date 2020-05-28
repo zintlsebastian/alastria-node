@@ -14,7 +14,7 @@ MESSAGE='Usage: init <mode> <node-type> <node-name> <password>
     node-name: NODE_NAME (example: Alastria)'
 
 # alejandro.alfonso
-# hay un cuarto argumento, PWD
+# hay un cuarto argumento, PASSWORD
 if ( [ $# -ne 3 ] ); then
     echo "$MESSAGE"
     exit
@@ -166,7 +166,8 @@ if ( [ "general" == "$NODE_TYPE" ]); then
     echo "[*] Initializing Constellation node."
     generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
 
-    cd ~/alastria/data/constellation/keystore
+    # ?
+    # cd ~/alastria/data/constellation/keystore
     cat ~/alastria/data/passwords.txt | constellation-node --generatekeys=node
     if [ ! -f ~/alastria-node/data/keys/data/constellation/keystore ]; then
 

@@ -28,7 +28,7 @@ else
 	cd /root/alastria-access-point && git pull
 	cd /root/alastria-node/scripts
 	./updatePerm.sh $NODE_TYPE
-	# alejadnro.alfonso
+	# alejandro.alfonso
 	# consultar con carlos
 	#./update-nginf.sh $NODE_TYPE
 fi
@@ -47,7 +47,7 @@ ARGS="--watch --local-rpc"
 exec ./start.sh $ARGS &
 
 # alejandro.alfonso
-# WIP ... sleep hasta tener "start.sh"
+# WIP ... sleep hasta tener "start.sh" refinado
 sleep infinity
 
 child=$!

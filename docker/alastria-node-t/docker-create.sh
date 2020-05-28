@@ -38,6 +38,9 @@ fi
 docker rm $NODE_NAME
 # docker rm -f $(docker ps -a --format {{.Names}} | grep "NOMBRECONTENEDOR")
 
+# alejandro.alfonso
+# haablar con Carlos sobre tcp/22000
+
 docker create --name ${NODE_NAME} \
       -v ${DATA_DIR}:/root/alastria \
       -p 21000:21000 -p 21000:21000/udp ${CONSTELLATION_ARGUMENTS} \

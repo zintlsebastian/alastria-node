@@ -7,5 +7,4 @@ if ( [ -z "${IMAGE_NAME}" ] ); then
   exit 0
 fi
 
-docker build -t ${IMAGE_NAME} \
-	.
+docker build -t ${IMAGE_NAME} .
