@@ -33,7 +33,7 @@ CONSTELLATION_NODES=$(cat ../data/constellation-nodes.json)
 
 if ( [ "auto" == "$1" -o "backup" == "$1" ]); then
     echo "[*] Autodiscovering public host IP ..."
-    CURRENT_HOST_IP="$(dig +short myip.opendns.com @resolver1.opendns.com > /dev/null 2>&1 || curl -s --retry 2 icanhazip.com)"
+    CURRENT_HOST_IP="$(curl -s --retry 2 icanhazip.com)"
     echo "Public host IP found: $CURRENT_HOST_IP"
 fi
 
