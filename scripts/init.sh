@@ -17,7 +17,7 @@ MESSAGE='Usage: init <mode> <node-type> <node-name> <password>
 # hay un cuarto argumento, PASSWORD
 if ( [ $# -ne 3 ] ); then
     echo "$MESSAGE"
-    exit
+    exit 0
 fi
 
 CURRENT_HOST_IP="$1"
@@ -78,7 +78,7 @@ generate_conf() {
    NODE_IP="$1"
    CONSTELLATION_PORT="$2"
    OTHER_NODES="$3"
-   PWD="$4"
+   PASSWORD="$4"
 
    #define the template.
    cat  << EOF
@@ -120,10 +120,8 @@ verbosity = 2
 EOF
 }
 
+echo "[*] Cleaning up temporary data directories, as 1st run detected."
 
-echo "[*] Cleaning up temporary data directories."
-# alejandro.alfonso
-# borrar toda la DLT?
 rm -rf ~/alastria/data
 rm -rf ~/alastria/logs/quorum*
 mkdir -p ~/alastria/data/{geth,constellation}
@@ -139,45 +137,39 @@ echo "[*] Initializing bootnode"
 cd ~/alastria/data/geth
 bootnode -genkey nodekey
 ENODE_KEY=$(bootnode -nodekey nodekey -writeaddress)
+
 if [ ! -f ~/alastria-node/data/keys/data/geth/nodekey ]; then
     echo "[*] creating dir if not created and set nodekey"
     mkdir -p ~/alastria-node/data/keys/data/geth
     cp nodekey ~/alastria-node/data/keys/data/geth/nodekey
 fi
 
-
-echo "ENODE -> 'enode://${ENODE_KEY}@${CURRENT_HOST_IP}:21000?discport=0'"
-
 # que hace esto?
-cd ~
-~/alastria-node/scripts/updatePerm.sh "$NODE_TYPE"
+#cd ~
+#~/alastria-node/scripts/updatePerm.sh "$NODE_TYPE"
 
 if ( [ "general" == "$NODE_TYPE" ]); then
 
     echo "[*] Inicialite geth..."
+    geth --datadir ~/alastria/data --password ~/alastria/data/passwords.txt account new
 
-    echo $ACCOUNT_PASSWORD > ./account_pass
+      if ( [ "${ENABLE_CONSTELLATION}" ] == "true" ); then
 
-    # Only create keystore folder on general node.
-    mkdir -p ~/alastria/data/keystore
-    geth --datadir ~/alastria/data --password ./account_pass account new
-    rm ./account_pass
+        echo "[*] Initializing Constellation node."
+        mkdir -p ~/alastria/data/keystore
+        generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
 
-    echo "[*] Initializing Constellation node."
-    generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
+        cd ~/alastria/data/constellation/keystore
+        cat ~/alastria/data/passwords.txt | /usr/local/constellation-0.3.2-ubuntu1604/constellation-node --generatekeys=node
+        if [ ! -f ~/alastria-node/data/keys/data/constellation/keystore ]; then
 
-    # ?
-    # cd ~/alastria/data/constellation/keystore
-    cat ~/alastria/data/passwords.txt | /usr/local/constellation-0.3.2-ubuntu1604/constellation-node --generatekeys=node
-    if [ ! -f ~/alastria-node/data/keys/data/constellation/keystore ]; then
+            echo "[*] Creating dir if not created, and set keystore"
+            mkdir -p ~/alastria-node/data/keys/data/constellation
+            cp -rf . ~/alastria-node/data/keys/data/constellation/keystore
+            cp -rf  ~/alastria/data/keystore ~/alastria-node/data/keys/data/
 
-        echo "[*] creating dir if not created, and set keystore"
-        mkdir -p ~/alastria-node/data/keys/data/constellation
-        cp -rf . ~/alastria-node/data/keys/data/constellation/keystore
-        cp -rf  ~/alastria/data/keystore ~/alastria-node/data/keys/data/
+        fi
     fi
-
-    cd ~
 fi
 
 if ( [ "validator" == "$NODE_TYPE" ]); then
@@ -187,6 +179,8 @@ fi
 echo "[*] Finish initiation."
 echo "$NODE_NAME" > ~/alastria/data/IDENTITY
 echo "$NODE_TYPE" > ~/alastria/data/NODE_TYPE
+
+echo "[*] Your ENODE -> 'enode://${ENODE_KEY}@${CURRENT_HOST_IP}:21000?discport=0'"
 
 echo "[*] Initialization was completed successfully."
 echo " "
