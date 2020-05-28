@@ -28,6 +28,8 @@ else
 	cd /root/alastria-access-point && git pull
 	cd /root/alastria-node/scripts
 	./updatePerm.sh $NODE_TYPE
+	# alejadnro.alfonso
+	# consultar con carlos
 	#./update-nginf.sh $NODE_TYPE
 fi
 

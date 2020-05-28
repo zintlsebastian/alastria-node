@@ -39,7 +39,7 @@ function gopath {
 
 function constellationpath {
     echo "export PATH=$PATH:/usr/local/constellation-0.3.2-ubuntu1604" >> $HOME/.bashrc
-    export PATH=$PATH:$GOROOT/usr/local/constellation-0.3.2-ubuntu1604
+    export PATH=$PATH:/usr/local/constellation-0.3.2-ubuntu1604
 }
 
 function installalastria {
