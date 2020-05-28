@@ -168,7 +168,7 @@ if ( [ "general" == "$NODE_TYPE" ]); then
 
     # ?
     # cd ~/alastria/data/constellation/keystore
-    cat ~/alastria/data/passwords.txt | constellation-node --generatekeys=node
+    cat ~/alastria/data/passwords.txt | /usr/local/constellation-0.3.2-ubuntu1604/constellation-node --generatekeys=node
     if [ ! -f ~/alastria-node/data/keys/data/constellation/keystore ]; then
 
         echo "[*] creating dir if not created, and set keystore"
