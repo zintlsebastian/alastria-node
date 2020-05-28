@@ -10,8 +10,6 @@
 
 ## Repositorios y enlaces relacionados ##
 
-
-
 * [alastria-node](https://github.com/alastria/alastria-node): Este repositorio. Usado para mantener arquitectura Docker y Ansible, así como los scripts de mantenimineto de nodo.
 * [alastria-access-point](https://github.com/alastria/alastria-access-point): Uso Use of nginx as front proxy for geth, constellarion
 * [alastria-quorum](https://github.com/alastria/quorum): Fork de repositorio Quorum
