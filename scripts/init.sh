@@ -148,7 +148,7 @@ fi
 #cd ~
 #~/alastria-node/scripts/updatePerm.sh "$NODE_TYPE"
 
-if ( [ "general" == "$NODE_TYPE" ]); then
+if ( [ "general" == "$NODE_TYPE" ] ); then
 
     echo "[*] Inicialite geth..."
     geth --datadir ~/alastria/data --password ~/alastria/data/passwords.txt account new
@@ -168,7 +168,7 @@ if ( [ "general" == "$NODE_TYPE" ]); then
 
             echo "[*] Creating dir if not created, and set keystore"
             mkdir -p ~/alastria-node/data/keys/data/constellation
-            cp -rf . ~/alastria-node/data/keys/data/constellation/keystore
+            # cp -rf . ~/alastria-node/data/keys/data/constellation/keystore
             cp -rf  ~/alastria/data/keystore ~/alastria-node/data/keys/data/
 
         fi

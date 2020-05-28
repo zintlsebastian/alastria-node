@@ -2,6 +2,8 @@
 
 # alejandro.alfonso
 # TBD... tipo de licencia
+# TBD... zona horaria?
+# TBD... minimizar el número de puertos
 
 FROM ubuntu:16.04
 
