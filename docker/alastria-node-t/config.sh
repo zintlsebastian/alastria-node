@@ -4,12 +4,53 @@ IMAGE_NAME=digitelts/alastria-node-t:latest
 
 DIRECTORY="./config"
 
-# alejandro.alfonso
-# FIJADO POR AHORA NODO REGULAR. A EVOLUCIONAR!
-# documentar posiblidad de EXTRA_ARGUMENTS para docker
-# necesaria password para account.eth[0}
-NODE_TYPE="general"
-NODE_NAME="REG_"
+function setNodeType {
+
+  PS3="What kind of node? => "
+
+  if [[ ! -z ${NODE_TYPE} ]]; then
+    echo "NODE_TYPE envvar set to: $NODE_TYPE"
+    NODE_TYPE=${NODE_TYPE}
+    return
+  fi
+
+  options=("general" "bootnode" "validator")
+
+  select opt in "${options[@]}"
+  do
+    case $opt in
+      "general")
+        NODE_TYPE=regular
+        NODE_NAME="REG_"
+  	    echo ""
+        break
+        ;;
+      "bootnode")
+        NODE_TYPE=bootnode
+        NODE_NAME="BOT_"
+  	    echo ""
+        break
+        ;;
+        "validator")
+        NODE_TYPE=validator
+        NODE_NAME="VAL_"
+  	    echo ""
+        break
+        ;;
+    esac
+  done
+}
+
+function setPassword {
+  echo "Set password for account.eth[0]: "
+  if [[ -z "${PASSWORD}" ]]; then
+    read PASSWORD
+  else
+    echo "PASSWORD envvar set to: $PASSWORD"
+    PASSWORD=${PASSWORD}
+  fi
+  echo ""
+}
 
 function setCompanyName {
   echo "Write company name: "
@@ -105,13 +146,14 @@ function launchConfig {
   echo $NODE_TYPE > $DIRECTORY/NODE_TYPE
   echo $DATA_DIR > $DIRECTORY/DATA_DIR
   echo $ENABLE_CONSTELLATION > $DIRECTORY/ENABLE_CONSTELLATION
+  echo $PASSWORD > $DIRECTORY/PASSWORD
   EXTRA_DOCKER_ARGUMENTS=${EXTRA_DOCKER_ARGUMENTS:-}
 
 }
 
 function checkName {
 
-  PS3="Are you sure that these data are correct?"$'\n'"Node Type => $NODE_TYPE"$'\n'"Node Name => $NODE_NAME"$'\n'"Volumen Name => $DATA_DIR"$'\n'"Constellation Enabled => $DATA_DIR"$'\n'"Press 1 (Yes) or 2 (No) => "
+  PS3="Are you sure that these data are correct?"$'\n'"Node Type => $NODE_TYPE"$'\n'"Node Name => $NODE_NAME"$'\n'"Volumen Name => $DATA_DIR"$'\n'"Constellation Enabled => $DATA_DIR"$'\n'"Password for eth0 account => $PASSWORD"$'\n'"Press 1 (Yes) or 2 (No) => "
 
   options=("Yes" "No")
 
@@ -132,12 +174,14 @@ function checkName {
   done
 }
 
+setNodeType
 setCompanyName
 setCPUNumber
 setRAMNumber
 setSequential
 setConstellation
 setVolume
+setPassword
 
 NODE_NAME=$(printf "%s%s%s%s%s%s%s%s" "$NODE_NAME" "$COMPANY_NAME" "_T_" "$CPU" "_" "$RAM" "_" "$SEQ")
 checkName

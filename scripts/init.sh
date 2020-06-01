@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# alejandro.alfonso
-# WIP
-# quitado el dockerfile
-# documentado validator y bootnode, pero no hay entradas para ellos
-# sugerir usar ifconfig.co como proveedor de IP WAN
-
 set -e
 
 MESSAGE='Usage: init <mode> <node-type> <node-name> <password>
@@ -147,6 +141,8 @@ fi
 # que hace esto?
 #cd ~
 #~/alastria-node/scripts/updatePerm.sh "$NODE_TYPE"
+
+## Incluir scripts de arranque para el resto de tipos de nodos
 
 if ( [ "general" == "$NODE_TYPE" ] ); then
 

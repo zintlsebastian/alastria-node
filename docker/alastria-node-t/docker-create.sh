@@ -33,20 +33,23 @@ if ( [ -z "${ENABLE_CONSTELLATION}" ] ); then
   fi
 fi
 
+if ( [ -z "${PASSWORD}" ] ); then
+  echo "Error: File PASSWORD empty"
+  exit 0
+fi
+
 # alejandro.alfonso
 # WIP
 docker rm $NODE_NAME
 # docker rm -f $(docker ps -a --format {{.Names}} | grep "NOMBRECONTENEDOR")
 
-# alejandro.alfonso
-# haablar con Carlos sobre tcp/22000
-
 docker create --name ${NODE_NAME} \
       -v ${DATA_DIR}:/root/alastria \
       -p 21000:21000 -p 21000:21000/udp ${CONSTELLATION_ARGUMENTS} \
       -p 22000:22000 \
-      -p 80:80 -p 8443:8443 \
+      -p 80:80 -p 443:443 \
       -e NODE_NAME=${NODE_NAME} \
       -e NODE_TYPE=${NODE_TYPE} \
       -e ENABLE_CONSTELLATION=${ENABLE_CONSTELLATION} \
+      -e PASSWORD=${PASSWORD} \
      ${EXTRA_DOCKER_ARGUMENTS} ${IMAGE_NAME}
