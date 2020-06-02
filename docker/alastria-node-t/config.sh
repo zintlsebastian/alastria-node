@@ -6,7 +6,7 @@ DIRECTORY="./config"
 
 function setNodeType {
 
-  PS3="What kind of node? => "
+  PS3="Node type? => "
 
   if [[ ! -z ${NODE_TYPE} ]]; then
     echo "NODE_TYPE envvar set to: $NODE_TYPE"
@@ -153,7 +153,7 @@ function launchConfig {
 
 function checkName {
 
-  PS3="Are you sure that these data are correct?"$'\n'"Node Type => $NODE_TYPE"$'\n'"Node Name => $NODE_NAME"$'\n'"Volumen Name => $DATA_DIR"$'\n'"Constellation Enabled => $DATA_DIR"$'\n'"Password for eth0 account => $PASSWORD"$'\n'"Press 1 (Yes) or 2 (No) => "
+  PS3="Are you sure that these data are correct?"$'\n'"Node Type => $NODE_TYPE"$'\n'"Node Name => $NODE_NAME"$'\n'"Persisten Volumen Path => $DATA_DIR"$'\n'"Constellation Enabled => $ENABLE_CONSTELLATION"$'\n'"Password for eth0 account => $PASSWORD"$'\n'"Press 1 (Yes) or 2 (No) => "
 
   options=("Yes" "No")
 

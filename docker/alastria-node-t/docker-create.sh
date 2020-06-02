@@ -50,6 +50,7 @@ docker create --name ${NODE_NAME} \
       -p 80:80 -p 443:443 \
       -e NODE_NAME=${NODE_NAME} \
       -e NODE_TYPE=${NODE_TYPE} \
+      -e DATA_DIR=${DATA_DIR} \
       -e ENABLE_CONSTELLATION=${ENABLE_CONSTELLATION} \
       -e PASSWORD=${PASSWORD} \
      ${EXTRA_DOCKER_ARGUMENTS} ${IMAGE_NAME}

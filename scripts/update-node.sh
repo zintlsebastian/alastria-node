@@ -10,13 +10,13 @@ DATADIR="$HOME/alastria-node/data/"
 echo "[" > $TMPFILE
 
 if [ "$NODE_TYPE" == "bootnode" ]; then
-   cat $DATADIR/boot-nodes.json $DATADIR/validator-nodes.json $DATADIR/regular-nodes.json >> $TMPFILE
+   cat $DATA_DIR/boot-nodes.json $DATA_DIR/validator-nodes.json $DATA_DIR/regular-nodes.json >> $TMPFILE
 fi
 if [ "$NODE_TYPE" == "validator" ]; then
-     cat $DATADIR/boot-nodes.json $DATADIR/validator-nodes.json >> $TMPFILE
+     cat $DATA_DIR/boot-nodes.json $DATA_DIR/validator-nodes.json >> $TMPFILE
 fi
 if [ "$NODE_TYPE" == "general" ]; then
-     cat $DATADIR/boot-nodes.json >> $TMPFILE
+     cat $DATA_DIR/boot-nodes.json >> $TMPFILE
 fi
 cat $TMPFILE | sed '$s/,$//' > $tmpfile
 echo "]" >> $tmpfile
@@ -28,6 +28,7 @@ rm $TMPFILE
 rm $tmpfile
 
 # Gracefull restart for geth
+# TOBE Tested
 killall -HUP geth
 
 set +u
