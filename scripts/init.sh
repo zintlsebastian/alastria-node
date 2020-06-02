@@ -9,7 +9,7 @@ MESSAGE='Usage: init <mode> <node-type> <node-name> <password>
 
 # alejandro.alfonso
 # hay un cuarto argumento, PASSWORD
-if ( [ $# -ne 5 ] ); then
+if ( [ $# -ne 4 ] ); then
     echo "${MESSAGE}"
     exit 0
 fi
@@ -36,7 +36,6 @@ generate_conf() {
    NODE_IP="$1"
    CONSTELLATION_PORT="$2"
    OTHER_NODES="$3"
-   PASSWORD="$4"
 
    #define the template.
    cat  << EOF
@@ -82,7 +81,7 @@ update_constellation_nodes() {
     NODE_IP="$1"
     CONSTELLATION_PORT="$2"
     URL=",
-    \"https://$NODE_IP:$CONSTELLATION_PORT/\"
+   \"https://$NODE_IP:$CONSTELLATION_PORT/\"
 ]"
     CONSTELLATION_NODES=${CONSTELLATION_NODES::-2}
     CONSTELLATION_NODES="$CONSTELLATION_NODES$URL"
@@ -123,8 +122,8 @@ if ( [ "general" == "$NODE_TYPE" ] ); then
 
         echo "[*] Initializing Constellation node."
         mkdir -p ~/alastria/data/keystore
-        update_constellation_nodes "${CURRENT_HOST_IP}" "${CONSTELLATION_PORT}"
-        generate_conf "${CURRENT_HOST_IP}" "${CONSTELLATION_PORT}" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
+        update_constellation_nodes ${CURRENT_HOST_IP} ${CONSTELLATION_PORT}
+        generate_conf ${CURRENT_HOST_IP} ${CONSTELLATION_PORT} "${CONSTELLATION_NODES}" > ~/alastria/data/constellation/constellation.conf
 
         cd ~/alastria/data/constellation/keystore
         cat ~/alastria/data/passwords.txt | /usr/local/constellation-0.3.2-ubuntu1604/constellation-node --generatekeys=node
