@@ -14,27 +14,28 @@ if [ ! -f ~/alastria/data/IDENTITY ]; then
 	git clone https://github.com/alastria/alastria-node -b alastria-node-t
 	git clone https://github.com/alastria/alastria-access-point
 	
-	cd /root/alastria-node/scripts
-	./init.sh auto $NODE_TYPE $NODE_NAME
-	./update-nginx.sh $NODE_TYPE $NODE_NAME
+	#./init.sh auto $NODE_TYPE $NODE_NAME
 else
-	echo "[*] Updating nodes"
+	echo "[*] Updating repositories"
 	
 	cd /root/alastria-node && git pull
 	cd /root/alastria-access-point && git pull
-
-	cd /root/alastria-node/scripts
-	./update-node.sh $NODE_TYPE $NODE_NAME
-	./update-nginx.sh $NODE_TYPE $NODE_NAME
 fi
 
+if [ $ENABLE_CONSTELLATION == "true" ]; then
+
+fi
+
+echo "[*] Update nginx"
+#/root/alastria-node/scripts/update-nginx.sh $NODE_TYPE $NODE_NAME
 echo "[*] Starting nginx"
 /etc/init.d/nginx start
 
-echo "[*] Starting geth... welcome to Alastria-T!"
-cd /root/alastria-node/scripts
-ARGS="--watch --local-rpc"
-exec ./start.sh $ARGS &
+echo "[*] Update nodes"
+#/root/alastria-node/scripts/update-node.sh $NODE_TYPE $NODE_NAME
+echo "[*] Starting node: Welcome to Alastria-T!"
+#ARGS="--watch --local-rpc"
+#exec ./start.sh $ARGS &
 
 # until a start.sh refined scripts
 sleep infinity
