@@ -18,7 +18,7 @@ if [ ! -f ~/alastria/data/IDENTITY ]; then
 	./init.sh auto $NODE_TYPE $NODE_NAME
 	./update-nginx.sh $NODE_TYPE $NODE_NAME
 else
-	echo "[*] Updating snodes"
+	echo "[*] Updating nodes"
 	
 	cd /root/alastria-node && git pull
 	cd /root/alastria-access-point && git pull

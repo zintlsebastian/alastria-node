@@ -8,9 +8,8 @@ kill_geth() {
 }
 trap kill_geth SIGTERM
 
-MESSAGE='Usage: start.sh <--clean> <--no-monitor> <--watch> <--local-rpc> <--logrotate>'
+MESSAGE='Usage: start.sh <--clean> <--watch> <--local-rpc> <--logrotate>'
 
-MONITOR=1
 WATCH=0
 CLEAN=0
 GCMODE="full"
@@ -21,9 +20,6 @@ while [[ $# -gt 0  ]]
 do
   key="$1"
   case "$key" in
-    -m|-M|--no-monitor)
-    MONITOR=0
-    ;;
     -w|-W|--watch)
     WATCH=1
     ;;
@@ -50,6 +46,10 @@ done
 VALIDATOR0_HOST_IP="$(dig +short validator0.telsius.alastria.io @resolver1.opendns.com > /dev/null 2>&1 || curl -s --retry 2 icanhazip.com)"
 CURRENT_HOST_IP="$(dig +short myip.opendns.com @resolver1.opendns.com > /dev/null 2>&1 || curl -s --retry 2 icanhazip.com)"
 CONSTELLATION_PORT=9000
+NETID=83584648538
+mapfile -t IDENTITY <~/alastria/data/IDENTITY
+mapfile -t NODE_TYPE <~/alastria/data/NODE_TYPE
+_TIME="_$(date +%Y%m%d%H%M%S)"
 
 check_constellation_isStarted(){
     set +e
@@ -66,10 +66,6 @@ check_constellation_isStarted(){
     set -e
 }
 
-NETID=83584648538
-mapfile -t IDENTITY <~/alastria/data/IDENTITY
-mapfile -t NODE_TYPE <~/alastria/data/NODE_TYPE
-
 #
 # options for metrics generation to InfluxDB server
 #
@@ -81,7 +77,7 @@ if [ "$NODE_TYPE" == "bootnode" ]; then
    GLOBAL_ARGS="--networkid $NETID --identity $IDENTITY --permissioned --rpc --rpcaddr $RPCADDR --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,istanbul --rpcport 22000 --port 21000 --istanbul.requesttimeout 10000  --ethstats $IDENTITY:bb98a0b6442386d0cdf8a31b267892c1@netstats.telsius.alastria.io:80 --verbosity 3 --vmdebug --emitcheckpoints --targetgaslimit 8000000 --syncmode full --gcmode $GCMODE --vmodule consensus/istanbul/core/core.go=5 --nodiscover ${INFLUX_METRICS}"
 fi
 
-_TIME="_$(date +%Y%m%d%H%M%S)"
+
 
 if ([ $CLEAN -gt 0 ])
 then
@@ -140,16 +136,6 @@ else
             echo "[ ] ERROR: $NODE_TYPE is not a correct node type."
         fi
     fi
-fi
-
-if ([ $MONITOR -gt 0 ])
-then
-    echo "[*] Monitor enabled. Starting monitor..."
-    RP=`readlink -m "$0"`
-    RD=`dirname "$RP"`
-    nohup $RD/monitor.sh start > /dev/null &
-else
-    echo "Monitor disabled."
 fi
 
 if ([ $LOGROTATE -gt 0 ]) 
