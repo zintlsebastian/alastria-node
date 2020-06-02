@@ -107,8 +107,8 @@ CONSTELLATION=${ENABLE_CONSTELLATION:-}
 
 if [ "$NODE_TYPE" == "general" ] && [ ! -z "$CONSTELLATION" ]; then
     echo "[*] Starting Constellation node"
-    nohup constellation-node ~/alastria/data/constellation/constellation.conf 2>> ~/alastria/logs/constellation"${_TIME}".log &
-    check_constellation_isStarted
+#  nohup constellation-node ~/alastria/data/constellation/constellation.conf 2>> ~/alastria/logs/constellation"${_TIME}".log &
+# check_constellation_isStarted
 fi
 
 if [[ ! -f "permissioned-nodes.json" ]]; then
