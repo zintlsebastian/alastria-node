@@ -5,7 +5,7 @@ FROM ubuntu:16.04
 LABEL maintainer "Alejandro Alfonso (DigitelTS) (alejandro.alfonso@madisonmk.com)"
 
 RUN apt-get update \
-	&& apt-get install -y git curl dnsutils net-tools nginx nginx-extras psmisc vim nano \
+	&& apt-get install -y git curl dnsutils net-tools nginx nginx-extras psmisc vim nano netcat-traditional tcpdump \
 	&& apt-get install -y software-properties-common make gcc libsodium-dev build-essential libdb-dev zlib1g-dev libtinfo-dev sysvbanner libleveldb-dev libdb5.3-dev
 
 #COPY ./installation-bin/go1.9.5.linux-amd64.tar.gz /tmp
