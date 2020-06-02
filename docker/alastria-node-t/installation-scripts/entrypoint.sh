@@ -30,7 +30,6 @@ fi
 
 echo "[*] Starting nginx"
 /etc/init.d/nginx start
-/usr/sbin/nginx -g "daemon off;"
 
 echo "[*] Starting geth... welcome to Alastria-T!"
 cd /root/alastria-node/scripts

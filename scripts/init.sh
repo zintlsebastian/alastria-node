@@ -4,7 +4,7 @@ set -e
 
 MESSAGE='Usage: init <mode> <node-type> <node-name> <password>
     mode: CURRENT_HOST_IP | auto | backup
-    node-type: validator | general | bootnode
+    node-type: validator | regular | bootnode
     node-name: NODE_NAME (example: Alastria)'
 
 # alejandro.alfonso
@@ -27,7 +27,6 @@ if ( [ "auto" == "$1" ]); then
     echo "[*] Autodiscovering public host IP ..."
     CURRENT_HOST_IP="$(curl -s --retry 2 icanhazip.com)"
     echo "Public host IP found: $CURRENT_HOST_IP"
-else 
 fi
 
 
@@ -39,7 +38,7 @@ update_constellation_nodes() {
 ]"
     CONSTELLATION_NODES=${CONSTELLATION_NODES::-2}
     CONSTELLATION_NODES="$CONSTELLATION_NODES$URL"
-    echo "$CONSTELLATION_NODES" > ~/alastria-node/data/constellation-nodes.json
+    echo "$CONSTELLATION_NODES" > ~/alastria/data/constellation-nodes.json
 }
 
 update_nodes_list() {
@@ -57,7 +56,7 @@ update_nodes_list() {
         VALIDATOR_NODES="$VALIDATOR_NODES$ENODE"
         echo "$VALIDATOR_NODES" > ~/alastria-node/data/validator-nodes.json
    fi
-   if ( [ "general" == "$NODE_TYPE" ]); then
+   if ( [ "regular" == "$NODE_TYPE" ]); then
         REGULAR_NODES="$REGULAR_NODES$ENODE"
         echo "$REGULAR_NODES" > ~/alastria-node/data/regular-nodes.json
    fi
@@ -144,7 +143,7 @@ fi
 
 ## Incluir scripts de arranque para el resto de tipos de nodos
 
-if ( [ "general" == "$NODE_TYPE" ] ); then
+if ( [ "regular" == "$NODE_TYPE" ] ); then
 
     echo "[*] Inicialite geth..."
     geth --datadir ~/alastria/data --password ~/alastria/data/passwords.txt account new
