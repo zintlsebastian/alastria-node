@@ -10,60 +10,26 @@ MESSAGE='Usage: init <mode> <node-type> <node-name> <password>
 # alejandro.alfonso
 # hay un cuarto argumento, PASSWORD
 if ( [ $# -ne 5 ] ); then
-    echo "$MESSAGE"
+    echo "${MESSAGE}"
     exit 0
 fi
 
 CURRENT_HOST_IP="$1"
 NODE_TYPE="$2"
 NODE_NAME="$3"
-if ( [ -z "${4}" ] ); then
-	ACCOUNT_PASSWORD='Passw0rd'
+if ( [ -z "$4" ] ); then
+	ACCOUNT_PASSWORD="Passw0rd"
 else
 	ACCOUNT_PASSWORD="$4"
 fi
+CONSTELLATION_PORT="9000"
+
 
 if ( [ "auto" == "$1" ]); then
     echo "[*] Autodiscovering public host IP ..."
     CURRENT_HOST_IP="$(curl -s --retry 2 icanhazip.com)"
-    echo "Public host IP found: $CURRENT_HOST_IP"
+    echo "Public host IP found: ${CURRENT_HOST_IP}"
 fi
-
-update_constellation_nodes() {
-    NODE_IP="$1"
-    CONSTELLATION_PORT="$2"
-    URL=",
-    \"https://$NODE_IP:$CONSTELLATION_PORT/\"
-]"
-    CONSTELLATION_NODES=${CONSTELLATION_NODES::-2}
-    CONSTELLATION_NODES="$CONSTELLATION_NODES$URL"
-    echo "$CONSTELLATION_NODES" > ~/alastria/data/constellation-nodes.json
-}
-
-update_nodes_list() {
-    echo "[*] Selected $NODE_TYPE node..."
-    echo "Updating permissioned nodes..."
-
-    BOOT_NODES=$(cat ~/alastria-node/data/boot-nodes.json)
-    REGULAR_NODES=$(cat ~/alastria-node/data/regular-nodes.json)
-    VALIDATOR_NODES=$(cat ~/alastria-node/data/validator-nodes.json)
-
-    ENODE="
- \"$1\","
- 
-   if ( [ "validator" == "$NODE_TYPE" ]); then
-        VALIDATOR_NODES="$VALIDATOR_NODES$ENODE"
-        echo "$VALIDATOR_NODES" > ~/alastria-node/data/validator-nodes.json
-   fi
-   if ( [ "general" == "$NODE_TYPE" ]); then
-        REGULAR_NODES="$REGULAR_NODES$ENODE"
-        echo "$REGULAR_NODES" > ~/alastria-node/data/regular-nodes.json
-   fi
-   if ( [ "bootnode" == "$NODE_TYPE" ]); then
-        BOOT_NODES="$BOOT_NODES$ENODE"
-        echo "$BOOT_NODES" > ~/alastria-node/data/boot-nodes.json
-   fi 
-}
 
 generate_conf() {
    #define parameters which are passed in.
@@ -81,7 +47,7 @@ url = "https://$NODE_IP:$CONSTELLATION_PORT/"
 port = $CONSTELLATION_PORT
 
 # Socket file to use for the private API / IPC
-socket = "$PWD/alastria/data/constellation/constellation.ipc"
+socket = "/root/alastria/data/constellation/constellation.ipc"
 
 # Initial (not necessarily complete) list of other nodes in the network.
 # Constellation will automatically connect to other nodes not in this list
@@ -90,17 +56,17 @@ socket = "$PWD/alastria/data/constellation/constellation.ipc"
 othernodes = $OTHER_NODES
 
 # The set of public keys this node will host
-publickeys = ["$PWD/alastria/data/constellation/keystore/node.pub"]
+publickeys = ["/root/alastria/data/constellation/keystore/node.pub"]
 
 # The corresponding set of private keys
-privatekeys = ["$PWD/alastria/data/constellation/keystore/node.key"]
+privatekeys = ["/root/alastria/data/constellation/keystore/node.key"]
 
 # Optional file containing the passwords to unlock the given privatekeys
 # (one password per line -- add an empty line if one key isn't locked.)
-passwords = "$PWD/alastria/data/passwords.txt"
+passwords = "/root/alastria/data/passwords.txt"
 
 # Where to store payloads and related information
-storage = "$PWD/alastria/data/constellation/data"
+storage = "/root/alastria/data/constellation/data"
 
 # Verbosity level (each level includes all prior levels)
 #   - 0: Only fatal errors
@@ -111,6 +77,18 @@ verbosity = 2
 
 EOF
 }
+
+update_constellation_nodes() {
+    NODE_IP="$1"
+    CONSTELLATION_PORT="$2"
+    URL=",
+    \"https://$NODE_IP:$CONSTELLATION_PORT/\"
+]"
+    CONSTELLATION_NODES=${CONSTELLATION_NODES::-2}
+    CONSTELLATION_NODES="$CONSTELLATION_NODES$URL"
+    echo "$CONSTELLATION_NODES" > ~/alastria/data/constellation-nodes.json
+}
+
 
 echo "[*] Cleaning up temporary data directories, as 1st run detected."
 
@@ -134,12 +112,6 @@ if [ ! -f ~/alastria-node/data/keys/data/geth/nodekey ]; then
     cp nodekey ~/alastria-node/data/keys/data/geth/nodekey
 fi
 
-# que hace esto?
-#cd ~
-#~/alastria-node/scripts/updatePerm.sh "$NODE_TYPE"
-
-## Incluir scripts de arranque para el resto de tipos de nodos
-
 if ( [ "general" == "$NODE_TYPE" ] ); then
 
     echo "[*] Inicialite geth..."
@@ -147,13 +119,12 @@ if ( [ "general" == "$NODE_TYPE" ] ); then
 
       if ( [ "${ENABLE_CONSTELLATION}" == "true" ] ); then
 
-        echo "[*] Initializing Constellation node."
-        mkdir -p ~/alastria/data/keystore
-        generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
-
-        PWD="$(pwd)"
         CONSTELLATION_NODES=$(cat ~/alastria-node/data/constellation-nodes.json)
 
+        echo "[*] Initializing Constellation node."
+        mkdir -p ~/alastria/data/keystore
+        update_constellation_nodes "${CURRENT_HOST_IP}" "${CONSTELLATION_PORT}"
+        generate_conf "${CURRENT_HOST_IP}" "${CONSTELLATION_PORT}" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
 
         cd ~/alastria/data/constellation/keystore
         cat ~/alastria/data/passwords.txt | /usr/local/constellation-0.3.2-ubuntu1604/constellation-node --generatekeys=node
