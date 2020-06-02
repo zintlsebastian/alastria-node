@@ -9,7 +9,7 @@ MESSAGE='Usage: init <mode> <node-type> <node-name> <password>
 
 # alejandro.alfonso
 # hay un cuarto argumento, PASSWORD
-if ( [ $# -ne 3 ] ); then
+if ( [ $# -ne 5 ] ); then
     echo "$MESSAGE"
     exit 0
 fi
@@ -28,7 +28,6 @@ if ( [ "auto" == "$1" ]); then
     CURRENT_HOST_IP="$(curl -s --retry 2 icanhazip.com)"
     echo "Public host IP found: $CURRENT_HOST_IP"
 fi
-
 
 update_constellation_nodes() {
     NODE_IP="$1"
@@ -115,8 +114,6 @@ EOF
 
 echo "[*] Cleaning up temporary data directories, as 1st run detected."
 
-rm -rf ~/alastria/data
-rm -rf ~/alastria/logs/quorum*
 mkdir -p ~/alastria/data/{geth,constellation}
 mkdir -p ~/alastria/data/constellation/{data,keystore}
 mkdir -p ~/alastria/logs
@@ -148,14 +145,15 @@ if ( [ "general" == "$NODE_TYPE" ] ); then
     echo "[*] Inicialite geth..."
     geth --datadir ~/alastria/data --password ~/alastria/data/passwords.txt account new
 
-      if ( [ "${ENABLE_CONSTELLATION}" ] == "true" ); then
-
-        PWD="$(pwd)"
-        CONSTELLATION_NODES=$(cat ~/alastria/data/constellation-nodes.json)
+      if ( [ "${ENABLE_CONSTELLATION}" == "true" ] ); then
 
         echo "[*] Initializing Constellation node."
         mkdir -p ~/alastria/data/keystore
         generate_conf "${CURRENT_HOST_IP}" "9000" "$CONSTELLATION_NODES" "${PWD}" > ~/alastria/data/constellation/constellation.conf
+
+        PWD="$(pwd)"
+        CONSTELLATION_NODES=$(cat ~/alastria-node/data/constellation-nodes.json)
+
 
         cd ~/alastria/data/constellation/keystore
         cat ~/alastria/data/passwords.txt | /usr/local/constellation-0.3.2-ubuntu1604/constellation-node --generatekeys=node
