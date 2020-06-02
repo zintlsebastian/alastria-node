@@ -4,7 +4,7 @@ set -e
 
 MESSAGE='Usage: init <mode> <node-type> <node-name> <password>
     mode: CURRENT_HOST_IP | auto | backup
-    node-type: validator | regular | bootnode
+    node-type: validator | general | bootnode
     node-name: NODE_NAME (example: Alastria)'
 
 # alejandro.alfonso
@@ -56,7 +56,7 @@ update_nodes_list() {
         VALIDATOR_NODES="$VALIDATOR_NODES$ENODE"
         echo "$VALIDATOR_NODES" > ~/alastria-node/data/validator-nodes.json
    fi
-   if ( [ "regular" == "$NODE_TYPE" ]); then
+   if ( [ "general" == "$NODE_TYPE" ]); then
         REGULAR_NODES="$REGULAR_NODES$ENODE"
         echo "$REGULAR_NODES" > ~/alastria-node/data/regular-nodes.json
    fi
@@ -143,7 +143,7 @@ fi
 
 ## Incluir scripts de arranque para el resto de tipos de nodos
 
-if ( [ "regular" == "$NODE_TYPE" ] ); then
+if ( [ "general" == "$NODE_TYPE" ] ); then
 
     echo "[*] Inicialite geth..."
     geth --datadir ~/alastria/data --password ~/alastria/data/passwords.txt account new

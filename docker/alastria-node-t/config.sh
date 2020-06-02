@@ -20,19 +20,19 @@ function setNodeType {
   do
     case $opt in
       "general")
-        NODE_TYPE=regular
+        NODE_TYPE="general"
         NODE_NAME="REG_"
   	    echo ""
         break
         ;;
       "bootnode")
-        NODE_TYPE=bootnode
+        NODE_TYPE="bootnode"
         NODE_NAME="BOT_"
   	    echo ""
         break
         ;;
         "validator")
-        NODE_TYPE=validator
+        NODE_TYPE="validator"
         NODE_NAME="VAL_"
   	    echo ""
         break
@@ -112,12 +112,12 @@ function setConstellation {
   do
     case $opt in
       "Yes")
-        ENABLE_CONSTELLATION=true
+        ENABLE_CONSTELLATION="true"
   	echo ""
         break
         ;;
       "No")
-        ENABLE_CONSTELLATION=false
+        ENABLE_CONSTELLATION="false"
   	echo ""
         break
         ;;

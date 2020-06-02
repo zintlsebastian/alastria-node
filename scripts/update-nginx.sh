@@ -2,7 +2,7 @@
 set -u
 set -e
 
-cp alastria-access-point/nginx/conf.d/access-point.conf /etc/nginx/conf.d/access-point.conf
+cp /root/alastria-access-point/nginx/conf.d/access-point.conf /etc/nginx/conf.d/access-point.conf
 touch /etc/nginx/conf.d/whitelist
 rm /etc/nginx/sites-enabled/default
 
