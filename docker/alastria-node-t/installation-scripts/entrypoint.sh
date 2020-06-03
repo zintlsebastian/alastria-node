@@ -14,7 +14,7 @@ if [ ! -f ~/alastria/data/IDENTITY ]; then
 	git clone https://github.com/alastria/alastria-node -b alastria-node-t
 	git clone https://github.com/alastria/alastria-access-point
 	
-	#./init.sh auto $NODE_TYPE $NODE_NAME $PASSWORD
+	./init.sh auto $NODE_TYPE $NODE_NAME $PASSWORD
 else
 	echo "[*] Updating repositories"
 	
@@ -30,10 +30,8 @@ echo "[*] Starting nginx"
 echo "[*] Update nodes"
 /root/alastria-node/scripts/update-node.sh $NODE_TYPE $NODE_NAME
 echo "[*] Starting node: Welcome to Alastria-T!"
-#ARGS="--watch --local-rpc"
-#exec ./start.sh $ARGS &
+ARGS="--watch --local-rpc"
+exec ./start.sh $ARGS &
 
-# until a start.sh refined scripts
-sleep infinity
-#child=$!
-#wait "$child"
+child=$!
+wait "$child"

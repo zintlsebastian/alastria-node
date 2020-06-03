@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# alejandro.alfonso
-# orientación de bootstrap para una imagen Debian sin update. No control de versiones, no hace falta!
-# bueno añadir shas de los bin
-# poner constellation como opcion, según variable importada en IMAGEN
-# GOPATH esta bien?
-
 function installgo {
   GO="/tmp/go1.9.5.linux-amd64.tar.gz"
   /bin/tar zxvf $GO -C /usr/local

@@ -10,7 +10,7 @@ DATADIR="$HOME/alastria-node/data/"
 echo "[" > $TMPFILE
 
 if [ "$NODE_TYPE" == "bootnode" ]; then
-   cat $DATADIR/boot-nodes.json $DATADIR/validator-nodes.json $DATADIR/regular-nodes.json >> $TMPFILE
+     cat $DATADIR/boot-nodes.json $DATADIR/validator-nodes.json $DATADIR/regular-nodes.json >> $TMPFILE
 fi
 if [ "$NODE_TYPE" == "validator" ]; then
      cat $DATADIR/boot-nodes.json $DATADIR/validator-nodes.json >> $TMPFILE
@@ -22,14 +22,12 @@ cat $TMPFILE | sed '$s/,$//' > $tmpfile
 echo "]" >> $tmpfile
 
 cat $tmpfile > $DESTDIR/static-nodes.json
-cp $DESTDIR/static-nodes.json $DESTDIR/permissioned-nodes.json
+cat $tmpfile > $DESTDIR/permissioned-nodes.json
 
 rm $TMPFILE
 rm $tmpfile
 
-# Gracefull restart for geth
-# TOBE Tested
-# killall -HUP geth
+# PENDIGA: gracefull restart for geth
 
 set +u
 set +e
