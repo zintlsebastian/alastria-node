@@ -7,6 +7,8 @@ NODE_TYPE="$1"
 DESTDIR="$HOME/alastria/data/"
 DATADIR="$HOME/alastria-node/data/"
 
+mkdir -p $HOME/alastria/data/
+
 echo "[" > $TMPFILE
 
 if [ "$NODE_TYPE" == "bootnode" ]; then
