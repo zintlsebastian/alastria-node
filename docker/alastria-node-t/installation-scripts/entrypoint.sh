@@ -33,7 +33,5 @@ echo "[*] Starting geth node"
 ARGS="--watch --local-rpc"
 exec /root/alastria-node/scripts/start.sh $ARGS &
 
-echo "***** Welcome to Alastria-T! *****"
-
 child=$!
 wait "$child"
