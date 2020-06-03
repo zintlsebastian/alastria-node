@@ -35,3 +35,6 @@ exec /root/alastria-node/scripts/start.sh $ARGS &
 
 child=$!
 wait "$child"
+
+# dirty fix
+/bin/sleep infinity
