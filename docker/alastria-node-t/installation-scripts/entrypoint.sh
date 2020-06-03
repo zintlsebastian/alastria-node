@@ -31,7 +31,7 @@ echo "[*] Update geth nodes"
 /root/alastria-node/scripts/update-node.sh $NODE_TYPE $NODE_NAME
 echo "[*] Starting geth node"
 ARGS="--watch --local-rpc"
-exec /root/alastria-node/scripts/start.sh $ARGS &
+/root/alastria-node/scripts/start.sh $ARGS
 
 child=$!
 wait "$child"
