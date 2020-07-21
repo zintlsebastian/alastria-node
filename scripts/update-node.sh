@@ -29,7 +29,9 @@ cat $tmpfile > $DESTDIR/permissioned-nodes.json
 rm $TMPFILE
 rm $tmpfile
 
-# PENDIGA: gracefull restart for geth
+# gracefull restart for geth
+./stop.sh
+./start.sh
 
 set +u
 set +e
