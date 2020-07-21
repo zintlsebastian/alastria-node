@@ -1,5 +1,4 @@
-# WIP do not use until rc1 (mid of june 2020)
-# WIP no usar hasta medidos de junio 2020
+# WIP
 
 ## Notas generales
 * Desarrollamos este readme en español, para su traducción una vez finalizada la rc1. Sin embargo, mantengamos comentarios en código y commits en inglés, para su mejor mantenimiento
